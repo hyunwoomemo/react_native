@@ -138,3 +138,49 @@ import {Dimensions} from 'react-native';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 ```
+
+## 날씨앱을 위한 Location 사용하기
+
+```javascript
+
+import * as Location from 'expo-location'
+import { useState } from 'react';
+
+export default function App() {
+
+  const [location, setLocation] = useState(null)
+  const [ok, setOk] = useState(true); // 허가 여부 체크
+
+  onst ask = async () => {
+    const {granted} = await Location.requestForegroundPermissionsAsync()
+    
+    if (!granted) {
+      setOk(false);
+    }
+    const { coords: { latitude, longitude } } = await Location.getCurrentPositionAsync({ accuracy: 5 }); // accuracy : 정확도
+    
+    const location = await Location.reverseGeocodeAsync({ latitude, longitude}, {useGoogleMaps: false})
+    const { city, district } = location[0]
+    
+    console.log(city + ' / ', district)
+  }
+
+  return (
+    <View style={styles.container}>
+      ...
+    </View>
+  );
+}
+
+```
+## 로딩 표시
+
+```javascript
+import {ActivityIndicator } from 'react-native';
+
+export default function App() {
+  return (
+    <ActivityIndicator color="white" size="large" />
+  )
+}
+```
