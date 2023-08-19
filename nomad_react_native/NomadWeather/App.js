@@ -79,10 +79,10 @@ const styles = StyleSheet.create({
     color: "white"
   },
   weather: {
+    marginLeft: 20
   },
   day: {
     width: SCREEN_WIDTH,
-    marginLeft: 20
   },
   temp: {
     marginTop: 50,
