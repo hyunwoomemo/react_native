@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components/native'
 import { makeImgPath } from '../utils';
+import { Dimensions } from 'react-native';
 
 interface PosterProps {
   path: string

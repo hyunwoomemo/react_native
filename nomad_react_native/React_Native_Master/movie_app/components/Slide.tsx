@@ -53,7 +53,7 @@ const Wrapper = styled.View`
 `;
 const Column = styled.View`
   width: 40%;
-  margin-left: 15px;
+  margin-left: 25px;
 `;
 
 const Overview = styled.Text<{ isDark: boolean }>`
