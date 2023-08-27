@@ -9,7 +9,7 @@ const HMedia = ({posterPath, originalTitle, releaseDate, overview}) => {
     <HColumn>
       <Title>{originalTitle}</Title>
       <Release>{new Date(releaseDate).toLocaleDateString("ko", { month: "long", day: "numeric", year: "numeric" })}</Release>
-      <Overview>{overview !== "" && overview.length > 110 ? `${overview.slice(0, 110)}...` : overview}</Overview>
+      <Overview>{overview !== "" && overview?.length > 110 ? `${overview?.slice(0, 110)}...` : overview}</Overview>
     </HColumn>
   </HMovie>
 )

@@ -7,43 +7,39 @@ import Slide from "../components/Slide";
 import Poster from "../components/Poster";
 import VMedia from "../components/VMedia";
 import HMedia from "../components/HMedia";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { Movie, MovieResponse, moviesApi } from "../api";
+import Loader from "../components/Loader";
+import HList from "../components/HList";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = ({ navigation: { navigate } }) => {
-  const { isLoading: nowPlayingLoading, data: nowPlayingData, refetch: refetchNowPlaying, isRefetching: isRefetchingNowPlaying } = useQuery<MovieResponse>("nowPlaying", moviesApi.nowPlaying);
-  const { isLoading: upcomingLoading, data: upcomingData, refetch: refetchUpcoming, isRefetching: isRefetchingUpcoming } = useQuery<MovieResponse>("upcoming", moviesApi.upcoming);
-  const { isLoading: trendingLoading, data: trendingData, refetch: refetchTrending, isRefetching: isRefetchingTrending } = useQuery<MovieResponse>("trending", moviesApi.trending);
+  const queryClient = useQueryClient();
+  const { isLoading: nowPlayingLoading, data: nowPlayingData, isRefetching: isRefetchingNowPlaying } = useQuery<MovieResponse>(["movies", "nowPlaying"], moviesApi.nowPlaying);
+  const { isLoading: upcomingLoading, data: upcomingData, isRefetching: isRefetchingUpcoming } = useQuery<MovieResponse>(["movies", "upcoming"], moviesApi.upcoming);
+  const { isLoading: trendingLoading, data: trendingData, isRefetching: isRefetchingTrending } = useQuery<MovieResponse>(["movies", "trending"], moviesApi.trending);
 
-  const onRefresh = async () => {
-    refetchNowPlaying();
-    refetchUpcoming();
-    refetchTrending();
+  const onRefresh = () => {
+    queryClient.refetchQueries(["movies"]);
   };
 
   const renderVMedia = ({ item }: { item: Movie }) => <HMedia posterPath={item.poster_path} originalTitle={item.original_title} releaseDate={item.release_date} overview={item.overview} />;
-  const renderHMedia = ({ item }: { item: Movie }) => <VMedia posterPath={item.poster_path} originalTitle={item.original_title} voteAverage={item.vote_average} />;
 
   const VSeparator = styled.View`
     height: 20px;
   `;
-  const HSeparator = styled.View`
-    width: 20px;
-  `;
 
-  const movieKeyExtractor = (item) => item.id;
+  const movieKeyExtractor = (item: any) => item.id;
 
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
+
   const refreshing = isRefetchingNowPlaying || isRefetchingUpcoming || isRefetchingTrending;
 
   return loading ? (
-    <LoaderView>
-      <ActivityIndicator />
-    </LoaderView>
+    <Loader />
   ) : upcomingData ? (
-    <FlatList
+      <FlatList
       refreshing={refreshing}
       onRefresh={onRefresh}
       ListHeaderComponent={
@@ -60,20 +56,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = ({ navigation: {
               />
             ))}
           </Swiper>
-          <ListContainer>
-            <ListTitle>Trending Movies</ListTitle>
-            {trendingData ? (
-              <TrendingScroll
-                data={trendingData.results}
-                keyExtractor={movieKeyExtractor}
-                contentContainerStyle={{ paddingHorizontal: 20 }}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                ItemSeparatorComponent={HSeparator}
-                renderItem={renderHMedia}
-              />
-            ) : null}
-          </ListContainer>
+          {trendingData ? <HList title="Trending Movies" data={trendingData.results} /> : null}
           <ComingSoonTitle>Coming soon</ComingSoonTitle>
         </>
       }
@@ -86,25 +69,11 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = ({ navigation: {
   ) : null;
 };
 
-const LoaderView = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
-
 const ListTitle = styled.Text`
   color: white;
   font-size: 16px;
   font-weight: 600;
   margin-left: 30px;
-`;
-
-const TrendingScroll = styled.FlatList`
-  margin-top: 20px;
-` as unknown as typeof FlatList;
-
-const ListContainer = styled.View`
-  margin-bottom: 40px;
 `;
 
 const ComingSoonTitle = styled(ListTitle)`

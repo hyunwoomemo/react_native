@@ -4,6 +4,7 @@ import { StyleSheet, View, useColorScheme } from "react-native";
 import styled from "styled-components/native";
 import { makeImgPath } from "../utils";
 import Poster from './Poster';
+import Votes from './Votes';
 
 interface SlideProps {
   backdropPath: string;
@@ -24,7 +25,7 @@ const Slide: React.FC<SlideProps> = ({ backdropPath, posterPath, originalTitle, 
           <Poster path={posterPath} />
           <Column>
             <Title isDark={isDark}>{originalTitle}</Title>
-            {voteAverage > 0 ? <Votes isDark={isDark}>⭐️ {voteAverage} / 10</Votes> : null}
+            {voteAverage > 0 ? <Votes votes={voteAverage} /> : null}
             <Overview isDark={isDark}>{overview.length > 80 ? `${overview.slice(0, 80)}...` : overview.slice(0, 80)}</Overview>
           </Column>
         </Wrapper>
@@ -59,11 +60,6 @@ const Column = styled.View`
 const Overview = styled.Text<{ isDark: boolean }>`
   margin-top: 10px;
   color: ${(props) => (props.isDark ? "rgba(255, 255, 255, 0.8)" : "rgba(0, 0, 0, 0.8)")};
-`;
-
-const Votes = styled(Overview)`
-  margin-top: 5px;
-  font-size: 12px;
 `;
 
 export default Slide;
