@@ -28,7 +28,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = ({ navigation: {
   };
 
 
-  const renderVMedia = ({ item }: { item: Movie }) => <HMedia posterPath={item.poster_path} originalTitle={item.original_title} releaseDate={item.release_date} overview={item.overview} />;
+  const renderVMedia = ({ item }: { item: Movie }) => <HMedia posterPath={item.poster_path} originalTitle={item.original_title} releaseDate={item.release_date} overview={item.overview} fullData={item}/>;
 
   const VSeparator = styled.View`
     height: 20px;
@@ -55,6 +55,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = ({ navigation: {
                 originalTitle={movie.original_title}
                 voteAverage={movie.vote_average}
                 overview={movie.overview}
+                fullData={movie}
               />
             ))}
           </Swiper>

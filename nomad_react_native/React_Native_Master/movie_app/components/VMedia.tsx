@@ -1,15 +1,29 @@
 import React from "react";
 import styled from "styled-components/native";
-import Poster from './Poster';
-import Votes from './Votes';
+import Poster from "./Poster";
+import Votes from "./Votes";
+import { useNavigation } from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native';
+import { Movie, TV } from '../api';
 
 interface VMediaProps {
-  movie: object
+  posterPath: string,
+  originalTitle: string,
+  voteAverage: number,
+  fullData: Movie | TV
 }
 
-const VMedia = ({posterPath, originalTitle, voteAverage}) => {
+const VMedia: React.FC<VMediaProps> = ({ posterPath, originalTitle, voteAverage, fullData }) => {
+  const navigation = useNavigation();
+  const goToDetail = () => {
+    navigation.navigate("Stack", {
+      screen: "Detail", params: {
+      ...fullData
+    }})
+  }
   return (
-    <Movie>
+    <TouchableOpacity onPress={goToDetail}>
+    <Container>
       <Poster path={posterPath} />
       <Title>
         {originalTitle?.slice(0, 13)}
@@ -17,11 +31,12 @@ const VMedia = ({posterPath, originalTitle, voteAverage}) => {
       </Title>
       {voteAverage > 0 ? <Votes votes={voteAverage} /> : null}
       {/* <Votes votes={voteAverage}>{voteAverage > 0 ? `⭐️ ${voteAverage.toFixed(1)}/10` : "Coming soon"}</Votes> */}
-    </Movie>
+    </Container>
+    </TouchableOpacity>
   );
 };
 
-const Movie = styled.View`
+const Container = styled.View`
   align-items: center;
 `;
 
@@ -31,6 +46,5 @@ const Title = styled.Text`
   margin-top: 7px;
   margin-bottom: 5px;
 `;
-
 
 export default VMedia;

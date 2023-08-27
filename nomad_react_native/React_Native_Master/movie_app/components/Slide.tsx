@@ -5,6 +5,9 @@ import styled from "styled-components/native";
 import { makeImgPath } from "../utils";
 import Poster from './Poster';
 import Votes from './Votes';
+import { useNavigation } from '@react-navigation/native';
+import { TouchableWithoutFeedback } from 'react-native';
+import { Movie } from '../api';
 
 interface SlideProps {
   backdropPath: string;
@@ -12,11 +15,20 @@ interface SlideProps {
   originalTitle: string;
   voteAverage: number;
   overview: string;
+  fullData: Movie
 }
 
-const Slide: React.FC<SlideProps> = ({ backdropPath, posterPath, originalTitle, voteAverage, overview }) => {
+const Slide: React.FC<SlideProps> = ({ backdropPath, posterPath, originalTitle, voteAverage, overview, fullData }) => {
+  const navigation = useNavigation();
+  const goToDeatil = () => {
+    navigation.navigate("Stack", {
+      screen: "Detail", params: {
+      ...fullData,
+    }})
+  }
   const isDark = useColorScheme() === "dark";
   return (
+    <TouchableWithoutFeedback onPress={goToDeatil}>
     <View style={{ flex: 1 }}>
       <BgImg source={{ uri: makeImgPath(backdropPath) }} style={StyleSheet.absoluteFill} blurRadius={20}>
         </BgImg>
@@ -26,11 +38,12 @@ const Slide: React.FC<SlideProps> = ({ backdropPath, posterPath, originalTitle, 
           <Column>
             <Title isDark={isDark}>{originalTitle}</Title>
             {voteAverage > 0 ? <Votes votes={voteAverage} /> : null}
-            <Overview isDark={isDark}>{overview.length > 80 ? `${overview.slice(0, 80)}...` : overview.slice(0, 80)}</Overview>
+            <Overview isDark={isDark}>{overview.length > 80 ? `${overview?.slice(0, 80)}...` : overview?.slice(0, 80)}</Overview>
           </Column>
         </Wrapper>
       </View>
     </View>
+    </TouchableWithoutFeedback>
   );
 };
 
