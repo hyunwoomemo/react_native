@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { View, Text, ScrollView, FlatList, RefreshControl } from "react-native";
 import { useQuery, useQueryClient } from "react-query";
@@ -8,28 +8,28 @@ import VMedia from "../components/VMedia";
 import HList, { HListSeparator } from "../components/HList";
 
 const Tv = () => {
-    const queryClient = useQueryClient()
-  const { isLoading: trendingLoading, data: trendingData, isRefetching:trendingRefetching  } = useQuery(["tv","trending"], tvApi.trending);
-  const { isLoading: todayLoading, data: todayData, isRefetching:todayRefetching  } = useQuery(["tv","today"], tvApi.airingToday);
-  const { isLoading: topLoading, data: topData, isRefetching:topRefetching } = useQuery(["tv","top"], tvApi.topRated);
+  const queryClient = useQueryClient();
+  const [refreshing, setRefreshing] = useState(false);
+  const { isLoading: trendingLoading, data: trendingData } = useQuery(["tv", "trending"], tvApi.trending);
+  const { isLoading: todayLoading, data: todayData } = useQuery(["tv", "today"], tvApi.airingToday);
+  const { isLoading: topLoading, data: topData } = useQuery(["tv", "top"], tvApi.topRated);
 
-  const onRefresh = () => {
-    queryClient.refetchQueries(["tv"]);
-  }
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await queryClient.refetchQueries(["tv"]);
+    setRefreshing(false);
+  };
   const loading = trendingLoading || todayLoading || topLoading;
-  const refreshing = trendingRefetching || todayRefetching || topRefetching;
 
   if (loading) {
     return <Loader />;
   }
 
   return (
-    <ScrollView contentContainerStyle={{ paddingVertical: 30 }} refreshControl={
-      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-    }>
+    <ScrollView contentContainerStyle={{ paddingVertical: 30 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <HList title="Trending TV" data={trendingData.results} />
       <HList title="Airing Today" data={todayData.results} />
-      <HList title="Top Rated TV" data={topData.results}/>
+      <HList title="Top Rated TV" data={topData.results} />
     </ScrollView>
   );
 };

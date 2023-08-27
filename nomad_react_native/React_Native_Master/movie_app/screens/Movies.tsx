@@ -16,13 +16,17 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = ({ navigation: { navigate } }) => {
   const queryClient = useQueryClient();
-  const { isLoading: nowPlayingLoading, data: nowPlayingData, isRefetching: isRefetchingNowPlaying } = useQuery<MovieResponse>(["movies", "nowPlaying"], moviesApi.nowPlaying);
-  const { isLoading: upcomingLoading, data: upcomingData, isRefetching: isRefetchingUpcoming } = useQuery<MovieResponse>(["movies", "upcoming"], moviesApi.upcoming);
-  const { isLoading: trendingLoading, data: trendingData, isRefetching: isRefetchingTrending } = useQuery<MovieResponse>(["movies", "trending"], moviesApi.trending);
+  const [refreshing, setRefreshing] = useState(false)
+  const { isLoading: nowPlayingLoading, data: nowPlayingData } = useQuery<MovieResponse>(["movies", "nowPlaying"], moviesApi.nowPlaying);
+  const { isLoading: upcomingLoading, data: upcomingData } = useQuery<MovieResponse>(["movies", "upcoming"], moviesApi.upcoming);
+  const { isLoading: trendingLoading, data: trendingData } = useQuery<MovieResponse>(["movies", "trending"], moviesApi.trending);
 
-  const onRefresh = () => {
-    queryClient.refetchQueries(["movies"]);
+  const onRefresh = async () => {
+    setRefreshing(true)
+    await queryClient.refetchQueries(["movies"]);
+    setRefreshing(false)
   };
+
 
   const renderVMedia = ({ item }: { item: Movie }) => <HMedia posterPath={item.poster_path} originalTitle={item.original_title} releaseDate={item.release_date} overview={item.overview} />;
 
@@ -34,12 +38,10 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = ({ navigation: {
 
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
 
-  const refreshing = isRefetchingNowPlaying || isRefetchingUpcoming || isRefetchingTrending;
-
   return loading ? (
     <Loader />
   ) : upcomingData ? (
-      <FlatList
+    <FlatList
       refreshing={refreshing}
       onRefresh={onRefresh}
       ListHeaderComponent={
