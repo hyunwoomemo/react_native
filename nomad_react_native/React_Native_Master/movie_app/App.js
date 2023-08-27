@@ -9,9 +9,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import Root from './navigation/Root';
 import { darkTheme, lightTheme } from './styled';
 import { ThemeProvider } from 'styled-components';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 export default function App() {
 
+  const queryClient = new QueryClient()
   const isDark = useColorScheme() === 'dark';
   const [assets] = useAssets([require('./assets/jian.jpeg')])
   const [loaded] = Font.useFonts(Ionicons.font)
@@ -40,6 +42,7 @@ export default function App() {
     //   <Text>SplashScreen Demo! 👋</Text>
     //   <Entypo name="rocket" size={30} />
     // </View>
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
       <>
         <View onLayout={onLayoutRootView}></View>
@@ -49,6 +52,7 @@ export default function App() {
       </NavigationContainer>
       </>
     </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
