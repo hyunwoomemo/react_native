@@ -18,20 +18,20 @@ export default function App() {
   const [assets] = useAssets([require('./assets/jian.jpeg')])
   const [loaded] = Font.useFonts(Ionicons.font)
 
-  const onLayoutRootView = useCallback(async () => {
-    if (assets && loaded) {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout.
-      await SplashScreen.hideAsync();
-    }
-  }, [assets, loaded]);
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (assets && loaded) {
+  //     // This tells the splash screen to hide immediately! If we call this after
+  //     // `setAppIsReady`, then we may see a blank screen while the app is
+  //     // loading its initial state and rendering its first pixels. So instead,
+  //     // we hide the splash screen once we know the root view has already
+  //     // performed layout.
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [assets, loaded]);
 
-  if (!assets) {
-    return null;
-  }
+  // if (!assets) {
+  //   return null;
+  // }
 
 
   return (
@@ -45,7 +45,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
       <>
-        <View onLayout={onLayoutRootView}></View>
+        {/* <View onLayout={onLayoutRootView}></View> */}
         <StatusBar barStyle='default'></StatusBar>
       <NavigationContainer>
         <Root />
