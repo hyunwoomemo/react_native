@@ -5,7 +5,7 @@ import styled from "styled-components/native";
 import { Movie, TV, moviesApi, tvApi } from "../api";
 import Poster from "../components/Poster";
 import { makeImgPath } from "../utils";
-import { LinearGradient } from "expo-linear-gradient";
+import { LinearGradient } from 'expo-linear-gradient'
 import { BLACK_COLOR } from "../colors";
 import { useQuery } from "react-query";
 import Loader from "../components/Loader";
@@ -68,11 +68,11 @@ const Detail: React.FC<DetailScreenProps> = ({ navigation: { setOptions }, route
     <Container>
       <Header>
         <Background style={StyleSheet.absoluteFill} source={{ uri: makeImgPath(params.backdrop_path || "") }} />
-        {/* <LinearGradient
+        <LinearGradient
           // Background Linear Gradient
           colors={["transparent", BLACK_COLOR]}
           style={StyleSheet.absoluteFill}
-        /> */}
+        />
         <Column>
           <Poster path={params.poster_path || ""} />
           <Title>{"original_title" in params ? params.original_title : params.original_name}</Title>

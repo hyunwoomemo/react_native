@@ -52,9 +52,9 @@ export interface TVResponse extends BaseResponse {
 }
 
 export const moviesApi = {
-  trending: () => fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`).then((res) => res.json()),
+  trending: ({pageParam}) => fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}&page=${pageParam || 1}`).then((res) => res.json()),
 
-  upcoming: () => fetch(`${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1&region=KR`).then((res) => res.json()),
+  upcoming: ({pageParam}) => fetch(`${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1&region=KR&page=${pageParam}`).then((res) => res.json()),
 
   nowPlaying: () => fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=en-US&page=1&region=KR`).then((res) => res.json()),
 

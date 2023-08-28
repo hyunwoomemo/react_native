@@ -10,11 +10,19 @@ interface HListProps {
 }
 const keyExtractor = (item: Movie | TV, index: number) => item.id.toString();
 
-const HList: React.FC<HListProps> = ({ title, data }) => {
+const loadMore = (hasNextPageTrending, fetchNextPageTrending) => {
+  if (hasNextPageTrending) {
+  fetchNextPageTrending()
+}
+}
+
+const HList: React.FC<HListProps> = ({ title, data,hasNextPageTrending, fetchNextPageTrending }) => {
   return (
     <ListContainer>
       <ListTitle>{title}</ListTitle>
       <FlatList
+        onEndReached={() => loadMore(hasNextPageTrending, fetchNextPageTrending)}
+        onEndReachedThreshold={0.4}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={keyExtractor}
