@@ -38,7 +38,8 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = ({ navigation: {
     }
   });
 
-  console.log(trendingData)
+  console.log(hasNextPageTrending, fetchNextPageTrending)
+
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -86,7 +87,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = ({ navigation: {
               />
             ))}
           </Swiper>
-          {trendingData ? <HList title="Trending Movies" data={trendingData?.pages.map(page => page.results).flat()} hasNextPageTrending={hasNextPageTrending} fetchNextPageTrending={fetchNextPageTrending} /> : null}
+          {trendingData ? <HList title="Trending Movies" data={trendingData?.pages.map(page => page.results).flat()} hasNextPage={hasNextPageTrending} fetchNextPage={fetchNextPageTrending} /> : null}
           <ComingSoonTitle>Coming soon</ComingSoonTitle>
         </>
       }

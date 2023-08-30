@@ -7,21 +7,23 @@ import { Movie, TV } from "../api";
 interface HListProps {
   title: string;
   data: Movie[] | TV[];
+  hasNextPage: number,
+  fetchNextPage: any
 }
 const keyExtractor = (item: Movie | TV, index: number) => item.id.toString();
 
-const loadMore = (hasNextPageTrending, fetchNextPageTrending) => {
-  if (hasNextPageTrending) {
-  fetchNextPageTrending()
+const loadMore = (hasNextPage, fetchNextPage) => {
+  if (hasNextPage) {
+  fetchNextPage()
 }
 }
 
-const HList: React.FC<HListProps> = ({ title, data,hasNextPageTrending, fetchNextPageTrending }) => {
+const HList: React.FC<HListProps> = ({ title, data, hasNextPage, fetchNextPage }) => {
   return (
     <ListContainer>
       <ListTitle>{title}</ListTitle>
       <FlatList
-        onEndReached={() => loadMore(hasNextPageTrending, fetchNextPageTrending)}
+        onEndReached={() => loadMore(hasNextPage, fetchNextPage)}
         onEndReachedThreshold={0.4}
         horizontal
         showsHorizontalScrollIndicator={false}
