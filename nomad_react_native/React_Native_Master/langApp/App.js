@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/native'
-import { Animated, Easing, Pressable, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, Easing, Pressable, TouchableOpacity } from 'react-native';
 
 const Container = styled.View`
   flex: 1;
@@ -15,41 +15,75 @@ const Box = styled.View`
 
 const AnimatedBox = Animated.createAnimatedComponent(Box)
 
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
+
 export default function App() {
-  const Y_POSITION = useRef(new Animated.Value(200)).current;
-  const [up, setUp] = useState(false)
-  const toggleUp = () => setUp(prev => !prev);
+  const position = useRef(new Animated.ValueXY({ x: -SCREEN_WIDTH / 2 + 100, y: -SCREEN_HEIGHT / 2 + 100 })).current;
 
-  const moveUp = () => {
-    Animated.timing(Y_POSITION, {
-      toValue: up ? 200 : -200,
-      useNativeDriver: true,
-      // duration: 5000,
-    }).start(toggleUp)
-  };
-  
-  [-300, 300]
-
-  const opacityValue = Y_POSITION.interpolate({
-    inputRange: [-200, 0, 200],
-    outputRange: [1, 0.5, 1]
+  const topLeft = Animated.timing(position, {
+    toValue: {
+      x: -SCREEN_WIDTH / 2 + 100,
+      y: -SCREEN_HEIGHT / 2 + 100,
+    },
+    useNativeDriver: true
   })
 
-  const borderRadius = Y_POSITION.interpolate({
+  const bottomLeft = Animated.timing(position, {
+    toValue: {
+      x: -SCREEN_WIDTH / 2 + 100,
+      y: SCREEN_HEIGHT / 2 - 100,
+    },
+    useNativeDriver: true
+  })
+
+  const topRight = Animated.timing(position, {
+    toValue: {
+      x: SCREEN_WIDTH / 2 - 100,
+      y: -SCREEN_HEIGHT / 2 + 100,
+    },
+    useNativeDriver: true
+  })
+
+  const bottomRight = Animated.timing(position, {
+    toValue: {
+      x: SCREEN_WIDTH / 2 - 100,
+      y: SCREEN_HEIGHT / 2 - 100,
+    },
+    useNativeDriver: true
+  })
+
+  const moveUp = () => {
+    Animated.loop(
+    Animated.sequence([bottomLeft, bottomRight, topRight, topLeft])
+    ).start()
+  };
+
+  [-300, 300]
+
+  const rotation = position.y.interpolate({
+    inputRange: [-200, 200],
+    outputRange: ["-90deg", "90deg"]
+  })
+
+  const borderRadius = position.y.interpolate({
     inputRange: [-200, 200],
     outputRange: [100, 0]
   })
 
-  console.log(opacityValue)
+  const backgroundColor = position.y.interpolate({
+    inputRange: [-200, 200],
+    outputRange: ["rgb(255,99,71)", "rgb(71,166,255)"]
+  })
 
-  Y_POSITION.addListener(() => console.log(opacityValue))
+  position.addListener(() => console.log(position.getTranslateTransform()))
+
   return (
     <Container>
       <Pressable onPress={moveUp}>
         <AnimatedBox style={{
-          transform: [{ translateY: Y_POSITION }],
-          opacity: opacityValue,
-          borderRadius
+          transform: [...position.getTranslateTransform()],
+          borderRadius,
+          backgroundColor
         }} />
       </Pressable>
     </Container>
