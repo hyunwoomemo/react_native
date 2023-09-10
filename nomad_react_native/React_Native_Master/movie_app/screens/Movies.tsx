@@ -38,7 +38,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = ({ navigation: {
     }
   });
 
-  console.log(hasNextPageTrending, fetchNextPageTrending)
+
 
 
   const onRefresh = async () => {
