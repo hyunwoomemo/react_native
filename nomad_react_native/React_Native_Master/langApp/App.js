@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/native'
-import { Animated, Dimensions, Easing, PanResponder, Pressable, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, Easing, PanResponder, Pressable, StatusBar, TouchableOpacity } from 'react-native';
 
 const Container = styled.View`
   flex: 1;
@@ -39,12 +39,25 @@ export default function App() {
 
   const panResponder = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
+    onPanResponderGrant: () => {
+      console.log('start')
+      position.setOffset({
+        x: position.x._value,
+        y: position.y._value
+      })
+    },
     onPanResponderMove: (_, { dx, dy }) => {
+      console.log('moving')
       position.setValue({
         x: dx,
         y: dy
       })
       console.log(dx, dy)
+    },
+    onPanResponderRelease: () => {
+      console.log('finished')
+      // offset 초기화
+      position.flattenOffset();
     }
   })).current
 
@@ -53,7 +66,7 @@ export default function App() {
       <AnimatedBox
         {...panResponder.panHandlers}
         style={{
-          transform: [...position.getTranslateTransform()],
+          transform: position.getTranslateTransform(),
           borderRadius,
           backgroundColor
         }} />
