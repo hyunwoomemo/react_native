@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/native'
-import { Animated, TouchableOpacity } from 'react-native';
+import { Animated, Easing, TouchableOpacity } from 'react-native';
 
 const Container = styled.View`
   flex: 1;
@@ -16,13 +16,16 @@ const Box = styled.View`
 const AnimatedBox = Animated.createAnimatedComponent(Box)
 
 export default function App() {
-  const Y = new Animated.Value(0)
+  const Y = useRef(new Animated.Value(0)).current;
+  const [up, setUp] = useState(false)
+  const toggleUp = () => setUp(prev => !prev);
 
   const moveUp = () => {
     Animated.timing(Y, {
       toValue: up ? 200: -200,
       useNativeDriver: true,
-    }).start()
+      easing: Easing.circle,
+    }).start(toggleUp)
   }
   Y.addListener(() => console.log(Y))
   return (
