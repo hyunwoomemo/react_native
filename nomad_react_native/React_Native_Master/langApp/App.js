@@ -1,75 +1,157 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/native'
-import { Animated, Dimensions, Easing, PanResponder, Pressable, StatusBar, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, Easing, PanResponder, Pressable, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'
+import icons from './icons'
 
 const Container = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-`
-const Box = styled.View`
-  background-color: tomato;
-  width: 200px;
-  height: 200px;
+  background-color: #00a8ff;
 `
 
-const AnimatedBox = Animated.createAnimatedComponent(Box)
+const Card = styled.View`
+background-color: #fff;
+width: 300px;
+height: 300px;
+justify-content: center;
+align-items: center;
+border-radius: 12px;
+box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+position: absolute;
+`
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
+const Button = styled.TouchableOpacity`
+margin: 0px 10px;
+`
+
+const BtnContainer = styled.View`
+  flex-direction: row;
+  margin-top: 100px;
+  flex: 1;
+`
+
+const CardContainer = styled.View`
+  flex: 3;
+  justify-content: center;
+  align-items: center;
+`
+
+const AnimatedCard = Animated.createAnimatedComponent(Card)
 
 export default function App() {
-  const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
-
-  [-300, 300]
-
-  const rotation = position.y.interpolate({
-    inputRange: [-200, 200],
-    outputRange: ["-90deg", "90deg"]
+  // Values
+  const scale = useRef(new Animated.Value(1)).current;
+  const position = useRef(new Animated.Value(0)).current
+  const rotation = position.interpolate({
+    inputRange: [-230, 230],
+    outputRange: ['-15deg', '15deg'],
+    extrapolate: "extend"
   })
 
-  const borderRadius = position.y.interpolate({
-    inputRange: [-200, 200],
-    outputRange: [100, 0]
+  const secondScale = position.interpolate({
+    inputRange: [-300, 0, 300],
+    outputRange: [1, 0.7, 1],
+    extrapolate: "clamp"
   })
 
-  const backgroundColor = position.y.interpolate({
-    inputRange: [-200, 200],
-    outputRange: ["rgb(255,99,71)", "rgb(71,166,255)"]
-  })
+  // position.addListener(() => console.log(position, rotation))
 
+  // Animations
+  const onPressIn = () => Animated.spring(scale, {
+    toValue: 0.95,
+    useNativeDriver: true,
+  }).start()
+
+  const onPressOut = () =>
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true
+    }).start()
+
+  const goCenter = () => {
+    Animated.spring(position, {
+      toValue: 0,
+      useNativeDriver: true,
+    }).start()
+  }
+
+  const goLeft = Animated.spring(position, {
+    toValue: -500, useNativeDriver: true, tension: 5, restSpeedThreshold: 100, restDisplacementThreshold: 100
+  })
+  console.log('dismiss to the left')
+
+  const goRight = Animated.spring(position, {
+    toValue: 500, useNativeDriver: true, tension: 5, restSpeedThreshold: 100, restDisplacementThreshold: 100
+  })
+  console.log('dismiss to the right')
+
+  // Pan Responders
   const panResponder = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderGrant: () => {
-      console.log('start')
-      position.setOffset({
-        x: position.x._value,
-        y: position.y._value
-      })
+      onPressIn()
+
     },
-    onPanResponderMove: (_, { dx, dy }) => {
-      console.log('moving')
-      position.setValue({
-        x: dx,
-        y: dy
-      })
-      console.log(dx, dy)
+    onPanResponderMove: (_, { dx }) => {
+      position.setValue(dx);
     },
-    onPanResponderRelease: () => {
-      console.log('finished')
-      // offset 초기화
-      position.flattenOffset();
+    onPanResponderRelease: (_, { dx }) => {
+      if (dx < -250) {
+        goLeft.start(onDismiss)
+      } else if (dx > 250) {
+        goRight.start(onDismiss)
+      } else {
+        onPressOut() 
+        goCenter()
+      }
     }
   })).current
 
+  // Stare
+  const [index, setIndex] = useState(0)
+
+  const onDismiss = () => {
+    scale.setValue(1)
+    position.setValue(0)
+    setIndex(prev => prev + 1)
+  }
+
+  const closePress = () => {
+    goLeft.start(onDismiss)
+  }
+
+  const checkPress = () => {
+    goRight.start(onDismiss)
+  }
+
   return (
     <Container>
-      <AnimatedBox
-        {...panResponder.panHandlers}
-        style={{
-          transform: position.getTranslateTransform(),
-          borderRadius,
-          backgroundColor
-        }} />
+      <CardContainer>
+        <AnimatedCard
+          style={{ transform: [{ scale: secondScale }] }}
+        >
+          <Ionicons name={icons[index+1]} color="#192a56" size={98} />
+        </AnimatedCard>
+        <AnimatedCard
+          {...panResponder.panHandlers}
+          style={{
+            
+            transform: [{ scale }, { translateX: position }, { rotateZ: rotation }]
+          }}>
+          <Ionicons name={icons[index]} color="#192a56" size={98} />
+        </AnimatedCard>
+      </CardContainer>
+      <BtnContainer>
+
+        <Button>
+          <Ionicons name="close-circle" color="white" size={58} onPress={closePress} />
+        </Button>
+        <Button>
+          <Ionicons name="checkmark-circle" color="white" size={58} onPress={checkPress} />
+        </Button>
+      </BtnContainer>
     </Container>
   )
 }
