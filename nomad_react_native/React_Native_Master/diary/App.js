@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import Navigator from './navigator';
 import * as SplashScreen from 'expo-splash-screen';
+import { DBContext } from './context';
 
 const FeelingSchema = {
   name: 'Feeling',
@@ -16,20 +17,24 @@ const FeelingSchema = {
 
 SplashScreen.preventAutoHideAsync();
 
+
 export default function App() {
   const [ready, setReady] = useState(false);
+  const [realm, setRealm] = useState(null);
 
   const startLoading = async () => {
-    const realm = await Realm.open({
+    const connection = await Realm.open({
       path: 'DiaryDB',
       schema: [FeelingSchema]
     })
+    setRealm(connection)
     setReady(true)
   }
 
   useEffect(() => {
     startLoading()
   }, [])
+
 
 
   const onLayoutRootView = useCallback(async () => {
@@ -48,8 +53,10 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer onLayout={onLayoutRootView}>
-      <Navigator />
-    </NavigationContainer>
+    <DBContext.Provider value={realm}>
+      <NavigationContainer onLayout={onLayoutRootView}>
+        <Navigator />
+      </NavigationContainer>
+    </DBContext.Provider>
   );
 }
