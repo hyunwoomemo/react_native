@@ -1,9 +1,9 @@
 import React from 'react'
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './screens/Home';
 import Write from './screens/Write';
 
-const Tabs = createStackNavigator()
+const Tabs = createNativeStackNavigator()
 
 const Navigator = () => <Tabs.Navigator screenOptions={{headerShown: false, presentation:'modal'}}>
   <Tabs.Screen name="home" component={Home} />
