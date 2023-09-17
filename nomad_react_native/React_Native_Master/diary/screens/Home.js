@@ -72,11 +72,6 @@ const Home = ({ navigation: { navigate } }) => {
     // const happy = feelings.filtered('emotion = "😀"')
   }, [])
 
-  const deleteItem = () => {
-    realm.write({
-      // realm.delete
-    })
-  }
 
   const onPress = (id) => {
     realm.write(() => {
